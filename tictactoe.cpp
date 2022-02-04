@@ -10,6 +10,7 @@ string saveFile = "game_save.conf";
 void printBoard();
 bool putMark(char, string);
 bool isWinner(char);
+int getWinner();
 bool checkRows(char);
 bool checkOneRow(char, int);
 bool checkColumns(char);
@@ -24,7 +25,7 @@ bool doesExists(string);
 int main(){
     string location;
     int nMarks = sizeof(marks)/sizeof(marks[0]);
-    int x = 0;
+    int x = 0, ret;
     bool isTie = true;
 
     for(int x = 0; x < gridSize; x++){
@@ -54,19 +55,19 @@ int main(){
             continue;
         }
         
+        ret = getWinner();
+
+        if(ret != -1){
+            cout << "Player with " << marks[ret] << " mark won" << endl;
+            isTie = false;
+            break;
+        }
+
         save();
         x++;
     }
 
     remove(saveFile.c_str());
-
-    for(int i = 0; i < nMarks; i++){
-        if(isWinner(marks[i])){
-            cout << "Player with " << marks[i] << " mark won" << endl;
-            isTie = false;
-            break;
-        }
-    }
 
     if(isTie){
         cout << "No one won. It's a tie." << endl;
@@ -228,7 +229,6 @@ int load(){
     }
 
     file.close();
-    // remove(saveFile.c_str());
 
     return count;
 }
@@ -241,4 +241,14 @@ bool doesExists(string filename){
     file.close();
 
     return ret;
+}
+
+int getWinner(){
+    for(int i = 0; i < sizeof(marks)/sizeof(marks[0]); i++){
+        if(isWinner(marks[i])){
+            return i;
+        }
+    }
+
+    return -1;
 }
